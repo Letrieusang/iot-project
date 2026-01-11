@@ -1,0 +1,315 @@
+swagger: '2.0'
+info:
+  description: The document of IoT project
+  version: 1.0.0
+  title: IoT REST APIs
+host: 'localhost:2411'
+
+paths:
+  /users/login:
+    post:
+      tags:
+        - User
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      operationId: login
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: '#/definitions/UserRequest'
+      responses:
+        200:
+          $ref: '#/responses/User'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+  /users:
+    post:
+      tags:
+        - User
+      summary: create new account
+      operationId: Signup
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: "#/definitions/UserRequest"
+      responses:
+        200:
+          $ref: '#/responses/User'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        type: string
+        required: true
+    get:
+      tags:
+        - User
+      summary: Get user by userId
+      operationId: getUser
+      produces:
+        - application/json
+      responses:
+        200:
+          $ref: '#/responses/User'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+  /users/{userId}/devices:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        type: string
+    post:
+      tags:
+        - User
+      summary: create new device for user
+      operationId: createDeviceByUserId
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: device
+          required: true
+          schema:
+            $ref: "#/definitions/DeviceRequest"
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+  /devices/{deviceId}:
+    parameters:
+      - in: path
+        name: deviceId
+        required: true
+        type: string
+    get:
+      tags:
+        - Devices
+      summary: Get device by deviceId
+      operationId: getDeviceByDeviceId
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          type: string
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+    put:
+      tags:
+        - Devices
+      summary: update device by deviceId
+      operationId: updateDeviceByDeviceId
+      produces:
+        - application/json
+      consumes:
+        - application/json
+
+      parameters:
+        - in: body
+          name: device
+          required: true
+          schema:
+            $ref: "#/definitions/DeviceRequest"
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+    delete:
+      tags:
+        - Devices
+      summary: delete Device by deviceId
+      operationId: deleteDeviceByDeviceId
+      responses:
+        204:
+          $ref: '#/responses/NoContent'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+    post:
+      tags:
+        - Devices
+      summary: update stateHistory by deviceId
+      operationId: updateStateHistoryByDeviceId
+      parameters:
+        - in: body
+          name: state
+          required: true
+          schema:
+            $ref: '#/definitions/State'
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+
+definitions:
+  User:
+    type: object
+    properties:
+
+      _id:
+        type: string
+
+      username:
+        type: string
+
+      password:
+        type: string
+
+      devices:
+        type: array
+        items:
+          $ref: '#/definitions/Device'
+  Device:
+    type: object
+    properties:
+      _id:
+        type: string
+
+      deviceName:
+        type: string
+      connectState:
+        type: string
+        enum: ["ON", "OFF"]
+      location:
+        type: string
+      userId:
+        type: string
+      stateHistory:
+        type: array
+        items:
+          $ref: '#/definitions/State'
+
+  UserRequest:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  DeviceRequest:
+    type: object
+    properties:
+      _id:
+        type: string
+      deviceName:
+        type: string
+      connectState:
+        type: string
+        enum: ["ON", "OFF"]
+      location:
+        type: string
+      stateHistory:
+        type: array
+        items:
+          $ref: '#/definitions/State'
+
+  State:
+    type: object
+    properties:
+      at:
+        type: string
+        format: date
+      template:
+        type: number
+      humidity:
+        type: number
+      co2:
+        type: number
+      dust:
+        type: number
+
+
+responses:
+
+
+  User:
+    description: "user"
+    schema:
+      $ref: '#/definitions/User'
+
+
+
+
+  Device:
+    description: "user list"
+    schema:
+      $ref: '#/definitions/Device'
+
+
+  OK:
+    description: '200: OK'
+  Created:
+    description: '201: Created'
+  Accepted:
+    description: '202: Accepted'
+  NoContent:
+    description: '204: NoContent'
+  BadRequest:
+    description: '400: Bad Request'
+  NoAuthorized:
+    description: '401: No Authorized'
+  Forbidden:
+    description: '403: Forbidden'
+  NotFound:
+    description: '404: Not Found'
+  InternalServerError:
+    description: '500: Internal Server Error'
